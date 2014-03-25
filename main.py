@@ -4,8 +4,9 @@ import pyganim
 from pygame.locals import *
 import time
 from fish_artist import FishArtist
-from random import randint
-from random import random
+from random import *
+import random
+import Creep
 #http://stackoverflow.com/questions/5555712/generate-a-random-number-in-python
 #from handler import DrawHandling
 
@@ -24,7 +25,36 @@ BGCOLOR = (100, 50, 50)
 #Red, Green, Blue
 main_fish = FishArtist(screen, 300, 200, 'blue_fish', 5)
 
+CREEP_FILENAMES = [
+    "green_fish_left_1.png",
+    "green_fish_right_1.png",
+    "grey_fish_left_1.png",
+    "grey_fish_right_1.png",
+    "purple_fish_left_1.png",
+    "purple_fish_right_1.png",
+    "shark_left_1.png",
+    "shadk_right_1.png",
+    "small_yellow_fish_left_1.png",
+    "small_yellow_fish_right_1.png",
+    "yellow_fish_left_1.png",
+    "yellow_fish_righ_1.png"
+    ]
+N_CREEPS = 6
+creeps = [] 
+
+for i in range(N_CREEPS):
+    creeps.append(Creep.Creep(screen, 
+                        (CREEP_FILENAMES[(i*2)],CREEP_FILENAMES[(i*2)+1]),
+                        (randint(0, SCREEN_HEIGHT),
+                        randint(0, SCREEN_HEIGHT)),
+                        (random.choice([-1,1]),
+                         random.choice([-1,1])),
+                        0.1))
+
 while 1:
+    # clock to slow down (only being called 30 times per second)
+    timePass = clock.tick(30) 
+
     main_fish.stationary_fish_movements(20)
 
 #    k = pygame.key.get_pressed()
@@ -50,8 +80,12 @@ while 1:
         if ((event.type == pygame.KEYDOWN and event.key == pygame.K_DOWN)):
             main_fish.move_down()
 
+    for creep in creeps:
+        creep.update(time_passed)
+        creep.blitme()
+
     pygame.display.update()
-    clock.tick(30) # clock to slow down (only being called 30 times per second)
+
 
 
 
