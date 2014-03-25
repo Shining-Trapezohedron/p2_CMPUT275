@@ -30,11 +30,10 @@ fish_artist.py -- handles all response to keyboard inputs and drawing as needed
 fish_artist can be used for other fish pictures, just need to vary parameters and take appropriate measures
 
 Need to do:
-- Handle several fish going across screen, possibly another class file for that?
-- Handle collisions
+-W Handle several fish going across screen, possibly another class file for that?
+-W Handle collisions
 - Need some sort of score counter
 - Instructions for playing
 - Buttons for starting, pausing and restarting
 - Need to handle deaths, i.e when the main_fish collides with other bigger fish
 - Need to handle background drawing 
-
