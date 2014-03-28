@@ -34,7 +34,7 @@ class Creep():
         for i in range(5):
             right_facing.append( (self.filename + "_right_" +str(i+1) + '.png' , 0.1 ))
             left_facing.append( (self.filename+ "_left_" + str(i+1) + '.png' ,0.1))
-        print(right_facing)
+        #print(right_facing)
         right_facing = pyganim.PygAnimation(right_facing)
         left_facing = pyganim.PygAnimation(left_facing)
 
@@ -46,7 +46,13 @@ class Creep():
         moveCond.play()
 
     def update(self):
-        pass
+        screenw, screenh  = self.screen.get_size()
+        #print(screenw,screenh)
+        for i in range(4):
+            self.move_right()
+            self.move_up()
+        if self.f_y >= screenw + self.f_h or self.f_x >= screenh + self.f_w:
+            print(self.filename)
     
     def stationary_fish_movements(self, percent):
         #takes a percent chance (0, %100) of blinking while stationary
@@ -58,22 +64,22 @@ class Creep():
             if self.d == left:
                 self.AObjs['left_facing'].blit(self.screen, (self.f_x, self.f_y))
     def move_right(self):
-        print('right facing')
         self.d = right
-        self.screen.fill((200, 200, 200)) # fill screen with grey color
+        #self.screen.fill((200, 200, 200)) # fill screen with grey color
+        self.screen.fill((200, 200, 200), pygame.Rect(self.f_x,self.f_y, self.f_w,self.f_h))
         self.f_x += self.f_rate
         self.AObjs['right_facing'].blit(self.screen, (self.f_x, self.f_y))
 
     def move_left(self):
-        print('left facing')
         self.d = left
-        self.screen.fill((200, 200, 200)) # fill screen with grey color
+        #self.screen.fill((200, 200, 200)) # fill screen with grey color
+        self.screen.fill((200, 200, 200), pygame.Rect(self.f_x,self.f_y, self.f_w,self.f_h))
         self.f_x -= self.f_rate
         self.AObjs['left_facing'].blit(self.screen, (self.f_x, self.f_y))
         
     def move_up(self):
-        print('up facing')
-        self.screen.fill((200, 200, 200)) # fill screen with grey color
+        #self.screen.fill((200, 200, 200)) # fill screen with grey color
+        self.screen.fill((200, 200, 200), pygame.Rect(self.f_x,self.f_y, self.f_w,self.f_h))
         self.f_y -= self.f_rate
         if self.d == right:
             self.AObjs['right_facing'].blit(self.screen, (self.f_x, self.f_y))
@@ -81,8 +87,8 @@ class Creep():
             self.AObjs['left_facing'].blit(self.screen, (self.f_x, self.f_y))
 
     def move_down(self):
-        print('down facing')
-        self.screen.fill((200, 200, 200)) # fill screen with grey color
+        #self.screen.fill((200, 200, 200)) # fill screen with grey color
+        self.screen.fill((200, 200, 200), pygame.Rect(self.f_x,self.f_y, self.f_w,self.f_h))
         self.f_y += self.f_rate
         if self.d == right:
             self.AObjs['right_facing'].blit(self.screen, (self.f_x, self.f_y))
