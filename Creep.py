@@ -3,94 +3,74 @@ import sys
 import pyganim
 from pygame.locals import *
 import time
+from fish_artist import FishArtist
 from random import randint
-from random import random
+from random import *
+import random
+import Creep
+#http://stackoverflow.com/questions/5555712/generate-a-random-number-in-python
+#from handler import DrawHandling
 
-right = 'right'
-left = 'left'
-class Creep():
-    def __init__(
-        self, screen, filename, pos, direction, speed, fish_height, fish_width):
-        self.filename = "fishdish/" + str(filename)
-        '''
-        Creep Object
-        Screen: A pygame screen (pygame.display)
-        filename (image for the creep)
-        init_pos: A tuple containing (x,y)
-        init_dir: A 2d vector of the creep
-        speed: creep speed in pixel/millisecond
-        '''
-        self.screen = screen
-        self.f_h = fish_height
-        self.f_w = fish_width
-        self.f_x = pos[0]
-        self.f_y = pos[1]
-        self.f_dir = direction 
-        self.f_rate = speed
-        self.AObjs = {} 
-        
-        right_facing = []
-        left_facing = []
-        for i in range(5):
-            right_facing.append( (self.filename + "_right_" +str(i+1) + '.png' , 0.1 ))
-            left_facing.append( (self.filename+ "_left_" + str(i+1) + '.png' ,0.1))
-        #print(right_facing)
-        right_facing = pyganim.PygAnimation(right_facing)
-        left_facing = pyganim.PygAnimation(left_facing)
+pygame.init()
 
-        self.AObjs['left_facing'] = left_facing
-        self. AObjs['right_facing'] = right_facing
-        moveCond = pyganim.PygConductor(self.AObjs)
 
-        self.d = right
-        moveCond.play()
+SCREEN_HEIGHT = 300 + 400
+SCREEN_WIDTH = 470 + 400
+background = 'fishdish/fishtitle.png'
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
-    def update(self):
-        screenw, screenh  = self.screen.get_size()
-        #print(screenw,screenh)
-        for i in range(4):
-            self.move_right()
-            self.move_up()
-        if self.f_y >= screenw + self.f_h or self.f_x >= screenh + self.f_w:
-            print(self.filename)
-    
-    def stationary_fish_movements(self, percent):
-        #takes a percent chance (0, %100) of blinking while stationary
-        if (randint(0,100) > (100-percent)): # because we want to the eye blinking every few seconds 
-        # not at every iteration of the loop
-            if self.d == right:
-                self.AObjs['right_facing'].blit(self.screen, (self.f_x, self.f_y))
-            
-            if self.d == left:
-                self.AObjs['left_facing'].blit(self.screen, (self.f_x, self.f_y))
-    def move_right(self):
-        self.d = right
-        #self.screen.fill((200, 200, 200)) # fill screen with grey color
-        self.screen.fill((200, 200, 200), pygame.Rect(self.f_x,self.f_y, self.f_w,self.f_h))
-        self.f_x += self.f_rate
-        self.AObjs['right_facing'].blit(self.screen, (self.f_x, self.f_y))
+clock = pygame.time.Clock()
 
-    def move_left(self):
-        self.d = left
-        #self.screen.fill((200, 200, 200)) # fill screen with grey color
-        self.screen.fill((200, 200, 200), pygame.Rect(self.f_x,self.f_y, self.f_w,self.f_h))
-        self.f_x -= self.f_rate
-        self.AObjs['left_facing'].blit(self.screen, (self.f_x, self.f_y))
-        
-    def move_up(self):
-        #self.screen.fill((200, 200, 200)) # fill screen with grey color
-        self.screen.fill((200, 200, 200), pygame.Rect(self.f_x,self.f_y, self.f_w,self.f_h))
-        self.f_y -= self.f_rate
-        if self.d == right:
-            self.AObjs['right_facing'].blit(self.screen, (self.f_x, self.f_y))
-        elif self.d == left:
-            self.AObjs['left_facing'].blit(self.screen, (self.f_x, self.f_y))
+#http://stackoverflow.com/questions/9961563/how-can-i-make-a-sprite-move-when-key-is-held-down
+BGCOLOR = (100, 50, 50)
+#Red, Green, Blue
+main_fish = FishArtist(screen, 300, 200, 'blue_fish', 5)
 
-    def move_down(self):
-        #self.screen.fill((200, 200, 200)) # fill screen with grey color
-        self.screen.fill((200, 200, 200), pygame.Rect(self.f_x,self.f_y, self.f_w,self.f_h))
-        self.f_y += self.f_rate
-        if self.d == right:
-            self.AObjs['right_facing'].blit(self.screen, (self.f_x, self.f_y))
-        elif self.d == left:
-            self.AObjs['left_facing'].blit(self.screen, (self.f_x, self.f_y))
+CREEP_FILES = [
+    ["green_fish",20,24],
+    ["grey_fish",25,30],
+    ["purple_fish",25,45],
+    ["yellow_fish",45,45]
+    ]
+N_CREEPS = len(CREEP_FILES)
+creeps = [] 
+
+for i in range(N_CREEPS):
+    creeps.append(Creep.Creep(screen, 
+                        CREEP_FILES[(i)][0],
+                        (randint(0, SCREEN_HEIGHT),
+                        randint(0, SCREEN_HEIGHT)),
+                        (random.choice([-1,1]),
+                         random.choice([-1,1])),
+                        0.4, CREEP_FILES[i][1], CREEP_FILES[i][2]))
+screen.fill((200,200,200))
+while 1:
+    main_fish.stationary_fish_movements(20)
+#    k = pygame.key.get_pressed()
+    main_fish.keys_pressed_response(pygame.key.get_pressed())
+    for creep in creeps:
+        creep.stationary_fish_movements(20)
+        creep.update()
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.display.quit()
+            sys.exit()
+
+        if (event.type == pygame.KEYDOWN and (event.key == pygame.K_SPACE)):
+            main_fish.grow()
+
+        if ( (event.type == pygame.KEYDOWN and event.key == pygame.K_RIGHT)):
+            main_fish.move_right()
+
+        if ((event.type == pygame.KEYDOWN and event.key == pygame.K_LEFT)):
+            main_fish.move_left()
+
+        if ((event.type == pygame.KEYDOWN and event.key == pygame.K_UP)):
+            main_fish.move_up()
+
+        if ((event.type == pygame.KEYDOWN and event.key == pygame.K_DOWN)):
+            main_fish.move_down()
+
+    pygame.display.update()
+    clock.tick(30) # clock to slow down (only being called 30 times per second)
+
